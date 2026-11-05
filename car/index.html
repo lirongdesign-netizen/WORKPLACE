@@ -80,6 +80,7 @@ details .body{padding:0 0 16px}
 .band details>summary .tease{color:#bdbdbd}
 .ph{margin:0 0 10px}
 .ph img{width:100%;aspect-ratio:16/9;max-height:420px;object-fit:cover;display:block;background:var(--soft)}
+.ph-fail{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;background:var(--soft);color:var(--ink2);font-size:13px;text-decoration:none;text-align:center;padding:0 16px}
 .ph figcaption{font-size:11px;color:var(--ink2);margin-top:4px}
 .band .ph figcaption{color:#a0a0a0}
 .more{color:var(--red);font-weight:700;font-size:12px}
@@ -125,7 +126,7 @@ footer{border-top:1px solid var(--line);padding:22px 0 calc(40px + env(safe-area
   <input id="q" type="search" placeholder="搜索" aria-label="搜索">
 </div></nav>
 <main><div class="wrap" id="view"><div class="empty">加载中…</div></div></main>
-<footer><div class="wrap">资讯由每日自动任务汇总整理，来源链接见各条目。仅供个人阅读参考。</div></footer>
+<footer><div class="wrap">资讯由每日自动任务汇总整理，来源链接见各条目。仅供个人阅读参考。<br>页面版本：v2 · 配图调试</div></footer>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -211,7 +212,7 @@ const SRC = /^>\s*来源/;
 // ---------- render pieces ----------
 function photo(st){
   if (!st.img) return "";
-  return '<figure class="ph"><img loading="lazy" referrerpolicy="no-referrer" src="' + esc(st.img.url) + '" alt="' + esc(st.title) + '" onerror="this.closest(\'figure\').remove()">' +
+  return '<figure class="ph"><img loading="lazy" referrerpolicy="no-referrer" src="' + esc(st.img.url) + '" alt="' + esc(st.title) + '" onerror="this.outerHTML=\'<a class=ph-fail href=&quot;\'+this.src+\'&quot; target=_blank rel=noopener>图片未能加载，点此尝试直接打开</a>\'">' +
     '<figcaption>' + esc(st.img.alt || "图片") + "</figcaption></figure>";
 }
 function storyOpen(st, opts = {}){
