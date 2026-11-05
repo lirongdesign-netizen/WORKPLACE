@@ -78,6 +78,10 @@ details>summary .tease{margin:0;color:var(--ink2);font-size:14.5px}
 details[open]>summary .tease{display:none}
 details .body{padding:0 0 16px}
 .band details>summary .tease{color:#bdbdbd}
+.ph{margin:0 0 10px}
+.ph img{width:100%;aspect-ratio:16/9;max-height:420px;object-fit:cover;display:block;background:var(--soft)}
+.ph figcaption{font-size:11px;color:var(--ink2);margin-top:4px}
+.band .ph figcaption{color:#a0a0a0}
 .more{color:var(--red);font-weight:700;font-size:12px}
 .band .more{color:#ff7b7b}
 
@@ -185,7 +189,17 @@ function parse(issue){
       st.lines.push(l);
     }
   }
-  for (const s of secs) s.stories = s.stories.filter(x => x.title || x.lines.some(l => l.trim()));
+  for (const s of secs) {
+    s.stories = s.stories.filter(x => x.title || x.lines.some(l => l.trim()));
+    for (const x of s.stories) {
+      const k = x.lines.findIndex(l => /^!\[[^\]]*\]\(https?:[^)\s]+\)\s*$/.test(l));
+      if (k >= 0) {
+        const m = x.lines[k].match(/^!\[([^\]]*)\]\((https?:[^)\s]+)\)/);
+        x.img = { alt: m[1], url: m[2] };
+        x.lines.splice(k, 1);
+      }
+    }
+  }
   return secs;
 }
 function tease(st){
@@ -195,10 +209,14 @@ function tease(st){
 const SRC = /^>\s*来源/;
 
 // ---------- render pieces ----------
+function photo(st){
+  if (!st.img) return "";
+  return '<figure class="ph"><img loading="lazy" referrerpolicy="no-referrer" src="' + esc(st.img.url) + '" alt="' + esc(st.title) + '" onerror="this.closest(\'figure\').remove()">' +
+    '<figcaption>' + esc(st.img.alt || "图片") + "</figcaption></figure>";
+}
 function storyOpen(st, opts = {}){
   const body = md(st.lines);
-  const src = ""; // sources are inside body as blockquote
-  return '<details' + (opts.open ? " open" : "") + '><summary>' +
+  return '<details' + (opts.open ? " open" : "") + '><summary>' + photo(st) +
     (opts.kicker ? '<div class="kicker">' + esc(opts.kicker) + "</div>" : "") +
     "<h3>" + inline(st.title || st.sec) + "</h3>" +
     '<p class="tease">' + esc(tease(st)) + ' <span class="more">展开阅读</span></p>' +
@@ -226,7 +244,7 @@ function viewIssue(issue){
   const others = secs.filter(s => s !== top && !s.design && !/观察|Takeaway|本周|Coming/.test(s.name + s.en));
   const tail = secs.filter(s => /观察|Takeaway|本周|Coming/.test(s.name + s.en));
   let h = '<div class="kicker">' + dstr(issue.date) + "</div>";
-  h += '<div class="lead"><div>' +
+  h += '<div class="lead"><div>' + photo(lead) +
     '<div class="kicker" style="margin-top:10px">头条</div><h1>' + inline(lead.title) + '</h1><div class="body">' + md(lead.lines) + "</div></div>" +
     '<div class="side">' + rest.map(s => '<div class="story">' + storyOpen(s) + "</div>").join("") + "</div></div>";
   if (design.length) h += '<div class="band">' + design.map(s => section(s)).join("") + "</div>";
