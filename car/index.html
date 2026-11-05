@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>全球汽车设计日报</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#111111">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="汽车设计日报">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+:root{
+  --bg:#ffffff; --ink:#141414; --ink2:#545454; --line:#dddddd; --soft:#f6f6f6;
+  --red:#bb1919; --band:#111111; --bandink:#ffffff; --link:#0a58ca;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#121212; --ink:#f2f2f2; --ink2:#a8a8a8; --line:#333333; --soft:#1c1c1c; --red:#e5484d; --band:#1f1f1f; --link:#7ab2ff; }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.5}
+a{color:var(--link)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+
+/* Masthead */
+.mast{background:#111;color:#fff;padding-top:env(safe-area-inset-top)}
+.mast .wrap{display:flex;align-items:center;justify-content:space-between;height:56px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff;cursor:pointer}
+.brand .mark{display:flex;gap:3px}
+.brand .mark i{display:block;width:22px;height:22px;background:#fff;color:#111;font-style:normal;font-weight:800;font-size:15px;line-height:22px;text-align:center}
+.brand .mark i.r{background:var(--red);color:#fff}
+.brand .name{font-weight:700;font-size:17px;letter-spacing:.2px}
+.date{font-size:12px;color:#bbb;text-align:right}
+.nav{background:var(--bg);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.nav .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav .wrap::-webkit-scrollbar{display:none}
+.nav button{background:none;border:0;border-bottom:4px solid transparent;color:var(--ink);font:inherit;font-weight:700;font-size:15px;padding:13px 14px 9px;cursor:pointer;white-space:nowrap}
+.nav button[aria-current="true"]{border-bottom-color:var(--red)}
+.nav input{margin:8px 0 8px auto;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:4px;padding:6px 10px;font:inherit;font-size:14px;width:140px;min-width:100px}
+
+/* Blocks */
+main{padding:22px 0 60px}
+.kicker{font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--red)}
+.block{margin-top:34px}
+.block>h2{margin:0 0 14px;padding-top:10px;border-top:4px solid var(--ink);font-size:22px;line-height:1.2}
+.block>h2 small{font-weight:400;font-size:13px;color:var(--ink2);margin-left:8px}
+.block.design>h2{border-top-color:var(--red)}
+.band{background:var(--band);color:var(--bandink);margin:34px -16px 0;padding:6px 16px 26px}
+.band .block{margin-top:20px}
+.band .block>h2{border-top-color:var(--red);color:#fff}
+.band a{color:#9cc4ff}
+.band .meta,.band .tease{color:#bdbdbd}
+.band details{border-color:#3a3a3a}
+
+.lead{display:grid;gap:20px}
+.lead h1{margin:6px 0 10px;font-size:28px;line-height:1.2}
+.lead .tease{font-size:16px}
+.lead .side{display:grid;gap:0}
+@media(min-width:800px){
+  .lead{grid-template-columns:1.7fr 1fr;gap:28px}
+  .lead h1{font-size:36px}
+  .lead .side{border-left:1px solid var(--line);padding-left:24px}
+}
+.cards{display:grid;gap:0 24px}
+@media(min-width:760px){.cards{grid-template-columns:1fr 1fr}.cards.three{grid-template-columns:1fr 1fr 1fr}}
+.story{padding:14px 0;border-bottom:1px solid var(--line)}
+.side .story:first-child{padding-top:0}
+.story h3{margin:2px 0 6px;font-size:18px;line-height:1.3}
+.story .tease{margin:0;color:var(--ink2);font-size:14.5px}
+.meta{font-size:12px;color:var(--ink2);margin-top:4px}
+details{border-bottom:1px solid var(--line)}
+details>summary{list-style:none;cursor:pointer;padding:14px 0}
+details>summary::-webkit-details-marker{display:none}
+details>summary h3{margin:2px 0 6px;font-size:18px;line-height:1.3}
+details>summary .tease{margin:0;color:var(--ink2);font-size:14.5px}
+details[open]>summary .tease{display:none}
+details .body{padding:0 0 16px}
+.band details>summary .tease{color:#bdbdbd}
+.more{color:var(--red);font-weight:700;font-size:12px}
+.band .more{color:#ff7b7b}
+
+/* Markdown body */
+.body p{margin:8px 0}
+.body ul{margin:8px 0;padding-left:20px}
+.body li{margin:4px 0}
+.body li.sub{margin-left:18px;list-style:circle}
+.body blockquote{margin:10px 0;padding:8px 12px;border-left:3px solid var(--red);background:var(--soft);font-size:13px;color:var(--ink2)}
+.band .body blockquote{background:#262626;color:#bdbdbd}
+.body table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0;display:block;overflow-x:auto}
+.body th,.body td{border:1px solid var(--line);padding:6px 8px;text-align:left;white-space:nowrap}
+.body th{background:var(--soft)}
+.body h4{margin:12px 0 4px;font-size:15px}
+.body code{background:var(--soft);padding:1px 4px;border-radius:3px}
+
+.dayrow{display:flex;gap:14px;align-items:baseline;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.dayrow:hover h3{text-decoration:underline}
+.dayrow time{font-size:13px;color:var(--ink2);min-width:92px;font-variant-numeric:tabular-nums}
+.dayrow h3{margin:0;font-size:16px;line-height:1.35}
+.tabs{display:flex;gap:8px;margin:0 0 6px}
+.tabs button{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 14px;font:inherit;font-size:13px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dateh{margin:26px 0 0;padding-top:8px;border-top:1px solid var(--line);font-size:13px;color:var(--ink2);font-weight:700}
+.empty{padding:40px 0;color:var(--ink2);text-align:center}
+footer{border-top:1px solid var(--line);padding:22px 0 calc(40px + env(safe-area-inset-bottom));color:var(--ink2);font-size:12px}
+</style>
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function () {});</script>
+</head>
+<body>
+<header class="mast"><div class="wrap">
+  <a class="brand" id="home"><span class="mark"><i>C</i><i>D</i><i class="r">D</i></span><span class="name">汽车设计日报</span></a>
+  <div class="date" id="today"></div>
+</div></header>
+<nav class="nav"><div class="wrap">
+  <button data-r="latest">今日</button>
+  <button data-r="design">设计</button>
+  <button data-r="china">中国</button>
+  <button data-r="world">全球</button>
+  <button data-r="archive">往期</button>
+  <input id="q" type="search" placeholder="搜索" aria-label="搜索">
+</div></nav>
+<main><div class="wrap" id="view"><div class="empty">加载中…</div></div></main>
+<footer><div class="wrap">资讯由每日自动任务汇总整理，来源链接见各条目。仅供个人阅读参考。</div></footer>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const WK = ["周日","周一","周二","周三","周四","周五","周六"];
+const dstr = s => { const d = new Date(s + "T00:00:00"); return d.getFullYear() + "年" + (d.getMonth()+1) + "月" + d.getDate() + "日 " + WK[d.getDay()]; };
+
+// ---------- markdown ----------
+function inline(s){
+  s = esc(s);
+  s = s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+  return s;
+}
+function md(lines){
+  let out = "", list = false, tbl = null;
+  const closeList = () => { if (list) { out += "</ul>"; list = false; } };
+  const closeTbl = () => { if (tbl) { out += "<table>" + tbl.map((r, i) => "<tr>" + r.map(c => (i ? "<td>" : "<th>") + inline(c.trim()) + (i ? "</td>" : "</th>")).join("") + "</tr>").join("") + "</table>"; tbl = null; } };
+  for (const raw of lines){
+    const l = raw.replace(/\s+$/, "");
+    if (/^\s*\|/.test(l)){
+      closeList();
+      if (/^\s*\|[\s:|-]+\|?\s*$/.test(l)) continue;
+      (tbl = tbl || []).push(l.trim().replace(/^\||\|$/g, "").split("|"));
+      continue;
+    }
+    closeTbl();
+    if (!l.trim()) { closeList(); continue; }
+    if (/^\s*---+\s*$/.test(l)) { closeList(); continue; }
+    let m;
+    if ((m = l.match(/^(\s*)(?:[-*]|\d+\.)\s+(.*)$/))) {
+      if (!list) { out += "<ul>"; list = true; }
+      out += '<li' + (m[1].length >= 2 ? ' class="sub"' : "") + ">" + inline(m[2]) + "</li>";
+    } else if ((m = l.match(/^>\s?(.*)$/))) { closeList(); out += "<blockquote>" + inline(m[1]) + "</blockquote>"; }
+    else if ((m = l.match(/^#{4,}\s+(.*)$/))) { closeList(); out += "<h4>" + inline(m[1]) + "</h4>"; }
+    else { closeList(); out += "<p>" + inline(l) + "</p>"; }
+  }
+  closeList(); closeTbl();
+  return out;
+}
+const plain = s => s.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*`>#]/g, "").replace(/^\s*[-\d.]+\s*/, "").trim();
+
+// ---------- parse an issue ----------
+function parse(issue){
+  const secs = []; let sec = null, st = null;
+  for (const l of issue.markdown.split("\n")){
+    let m;
+    if (/^#\s/.test(l) || /^>\s*Auto Industry/.test(l)) continue;
+    if ((m = l.match(/^##\s+(.*)$/))) {
+      const head = m[1].replace(/^[^\p{L}\p{N}]+/u, "");
+      const parts = head.split("|").map(x => x.trim());
+      sec = { name: parts[0], en: parts[1] || "", design: /设计/.test(head), china: /中国/.test(head), stories: [] };
+      secs.push(sec); st = null;
+    } else if ((m = l.match(/^###\s+(.*)$/))) {
+      if (!sec) continue;
+      st = { title: m[1].replace(/^[^\p{L}\p{N}“"『「]+/u, ""), lines: [], date: issue.date, sec: sec.name, design: sec.design };
+      sec.stories.push(st);
+    } else if (sec) {
+      if (!st) { st = { title: "", lines: [], date: issue.date, sec: sec.name, design: sec.design }; sec.stories.push(st); }
+      st.lines.push(l);
+    }
+  }
+  for (const s of secs) s.stories = s.stories.filter(x => x.title || x.lines.some(l => l.trim()));
+  return secs;
+}
+function tease(st){
+  const t = st.lines.map(plain).filter(x => x && !x.startsWith("来源"));
+  return t.slice(0, 2).join(" ").slice(0, 150);
+}
+const SRC = /^>\s*来源/;
+
+// ---------- render pieces ----------
+function storyOpen(st, opts = {}){
+  const body = md(st.lines);
+  const src = ""; // sources are inside body as blockquote
+  return '<details' + (opts.open ? " open" : "") + '><summary>' +
+    (opts.kicker ? '<div class="kicker">' + esc(opts.kicker) + "</div>" : "") +
+    "<h3>" + inline(st.title || st.sec) + "</h3>" +
+    '<p class="tease">' + esc(tease(st)) + ' <span class="more">展开阅读</span></p>' +
+    (opts.date ? '<div class="meta">' + dstr(st.date) + "</div>" : "") +
+    '</summary><div class="body">' + body + "</div></details>";
+}
+function section(sec, opts = {}){
+  if (!sec.stories.length) return "";
+  return '<section class="block' + (sec.design ? " design" : "") + '"><h2>' + esc(sec.name) + (sec.en ? "<small>" + esc(sec.en) + "</small>" : "") + "</h2>" +
+    '<div class="cards' + (opts.three ? " three" : "") + '">' + sec.stories.map(s => storyOpen(s)).join("") + "</div></section>";
+}
+
+// ---------- data ----------
+let ISSUES = [], PARSED = {};
+const parsed = i => PARSED[i.date] || (PARSED[i.date] = parse(i));
+const allStories = filter => ISSUES.flatMap(i => parsed(i).filter(filter).flatMap(s => s.stories));
+
+// ---------- views ----------
+function viewIssue(issue){
+  const secs = parsed(issue);
+  if (!secs.length) return '<div class="empty">本期没有内容</div>';
+  const top = secs.find(s => /头条|Top/.test(s.name + s.en)) || secs[0];
+  const lead = top.stories[0], rest = top.stories.slice(1);
+  const design = secs.filter(s => s.design);
+  const others = secs.filter(s => s !== top && !s.design && !/观察|Takeaway|本周|Coming/.test(s.name + s.en));
+  const tail = secs.filter(s => /观察|Takeaway|本周|Coming/.test(s.name + s.en));
+  let h = '<div class="kicker">' + dstr(issue.date) + "</div>";
+  h += '<div class="lead"><div>' +
+    '<div class="kicker" style="margin-top:10px">头条</div><h1>' + inline(lead.title) + '</h1><div class="body">' + md(lead.lines) + "</div></div>" +
+    '<div class="side">' + rest.map(s => '<div class="story">' + storyOpen(s) + "</div>").join("") + "</div></div>";
+  if (design.length) h += '<div class="band">' + design.map(s => section(s)).join("") + "</div>";
+  h += others.map(s => section(s)).join("");
+  h += tail.map(s => section(s)).join("");
+  return h;
+}
+function viewTopic(title, en, filter, limit){
+  const stories = allStories(filter);
+  let cut = "";
+  const mode = viewTopic.mode[title] || "30";
+  if (mode === "30") { const d = new Date(ISSUES[0].date + "T00:00:00"); d.setDate(d.getDate() - 30); cut = d.toISOString().slice(0, 10); }
+  const list = stories.filter(s => s.date >= cut);
+  let h = '<div class="kicker">' + esc(en) + '</div><h1 style="margin:4px 0 12px;font-size:30px">' + esc(title) + "</h1>" +
+    '<div class="tabs"><button data-mode="30" aria-pressed="' + (mode === "30") + '">近 30 天</button><button data-mode="all" aria-pressed="' + (mode === "all") + '">全部</button></div>';
+  if (!list.length) return h + '<div class="empty">暂无内容</div>';
+  let last = "";
+  for (const s of list){
+    if (s.date !== last) { h += '<div class="dateh">' + dstr(s.date) + "</div>"; last = s.date; }
+    h += storyOpen(s, { kicker: s.sec });
+  }
+  return h;
+}
+viewTopic.mode = {};
+function viewArchive(){
+  return '<div class="kicker">Archive</div><h1 style="margin:4px 0 12px;font-size:30px">往期日报</h1>' +
+    ISSUES.map(i => '<div class="dayrow" data-d="' + i.date + '"><time>' + i.date + "</time><h3>" + esc(i.title.replace(/^全球汽车行业每日资讯\s*\|\s*/, "")) + "</h3></div>").join("");
+}
+function viewSearch(q){
+  const k = q.toLowerCase();
+  const hits = ISSUES.flatMap(i => parsed(i).flatMap(s => s.stories)).filter(s => (s.title + " " + s.lines.join(" ")).toLowerCase().includes(k)).slice(0, 60);
+  return '<div class="kicker">搜索</div><h1 style="margin:4px 0 12px;font-size:26px">“' + esc(q) + "” · " + hits.length + " 条</h1>" +
+    (hits.map(s => storyOpen(s, { kicker: s.sec, date: true })).join("") || '<div class="empty">没有找到</div>');
+}
+
+// ---------- router ----------
+let route = "latest";
+function render(){
+  const v = $("#view");
+  const q = $("#q").value.trim();
+  document.querySelectorAll(".nav button").forEach(b => b.setAttribute("aria-current", String(!q && b.dataset.r === (route.startsWith("d") && route !== "design" ? "archive" : route))));
+  if (!ISSUES.length) { v.innerHTML = '<div class="empty">暂无日报</div>'; return; }
+  if (q) v.innerHTML = viewSearch(q);
+  else if (route === "latest") v.innerHTML = viewIssue(ISSUES[0]);
+  else if (route === "design") v.innerHTML = viewTopic("设计", "Design", s => s.design);
+  else if (route === "china") v.innerHTML = viewTopic("中国", "China", s => s.china);
+  else if (route === "world") v.innerHTML = viewTopic("全球", "World", s => !s.china && !s.design);
+  else if (route === "archive") v.innerHTML = viewArchive();
+  else if (route.startsWith("d")) {
+    const i = ISSUES.find(x => "d" + x.date === route);
+    v.innerHTML = i ? '<button class="more" style="background:none;border:0;padding:0 0 10px;cursor:pointer" data-r="archive">← 往期</button>' + viewIssue(i) : '<div class="empty">没有这一期</div>';
+  }
+  try { history.replaceState(null, "", "#" + route); } catch (e) {}
+}
+function go(r){ route = r; $("#q").value = ""; render(); window.scrollTo(0, 0); }
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-r]"); if (b) return go(b.dataset.r);
+  const d = e.target.closest("[data-d]"); if (d) return go("d" + d.dataset.d);
+  const m = e.target.closest("[data-mode]"); if (m) { viewTopic.mode[route === "design" ? "设计" : route === "china" ? "中国" : "全球"] = m.dataset.mode; render(); }
+  if (e.target.closest("#home")) go("latest");
+});
+$("#q").addEventListener("input", render);
+
+fetch("issues.json", { cache: "no-store" }).then(r => r.json()).then(j => {
+  ISSUES = j;
+  $("#today").innerHTML = j.length ? "最新一期<br>" + dstr(j[0].date) : "";
+  const h = location.hash.slice(1);
+  if (h && (["latest", "design", "china", "world", "archive"].includes(h) || ISSUES.some(i => "d" + i.date === h))) route = h;
+  render();
+}).catch(() => { $("#view").innerHTML = '<div class="empty">加载失败，请检查网络后重试</div>'; });
+</script>
+</body>
+</html>
