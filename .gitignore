@@ -1,0 +1,6 @@
+archive/
+素材/
+server.py
+progress.json
+.DS_Store
+*.bak*

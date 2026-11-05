@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2f6f5e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="回话训练">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>职场回话训练</title>
+<style>
+  :root {
+    --bg: #f6f4ef;
+    --card: #ffffff;
+    --ink: #2b2b2b;
+    --ink-2: #6b6b6b;
+    --accent: #c9483c;
+    --accent-soft: #fdece9;
+    --gold: #b8860b;
+    --line: #e8e4dc;
+    --green: #2e7d5b;
+    --green-soft: #e8f3ee;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.7;
+    padding-bottom: 60px;
+  }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 16px; }
+
+  header {
+    text-align: center;
+    padding: 34px 16px 10px;
+  }
+  header h1 { font-size: 26px; letter-spacing: 2px; }
+  header h1 .dot { color: var(--accent); }
+  header .sub { color: var(--ink-2); font-size: 13px; margin-top: 6px; }
+
+  .stats {
+    display: flex; justify-content: center; gap: 26px;
+    font-size: 13px; color: var(--ink-2); margin: 14px 0 4px;
+  }
+  .stats b { color: var(--accent); font-size: 17px; margin-right: 2px; }
+
+  nav {
+    display: flex; justify-content: center; gap: 8px;
+    margin: 16px 0 22px;
+  }
+  nav button {
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--ink-2);
+    padding: 7px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  nav button.active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    margin-right: 8px;
+  }
+  .tag.done { background: var(--green-soft); color: var(--green); }
+  .q-title { font-size: 18px; font-weight: 600; margin: 10px 0 8px; }
+  .scene { color: var(--ink-2); font-size: 14px; margin-bottom: 14px; }
+  .line-bubble {
+    background: #f3f0e9;
+    border-radius: 4px 16px 16px 16px;
+    padding: 14px 16px;
+    font-size: 16px;
+    position: relative;
+    margin-bottom: 18px;
+  }
+  .line-bubble::before {
+    content: attr(data-speaker);
+    position: absolute; top: -9px; left: 12px;
+    font-size: 11px; color: var(--ink-2);
+    background: var(--card); padding: 0 6px;
+    border: 1px solid var(--line); border-radius: 999px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+    background: #fffdf9;
+  }
+  textarea:focus { outline: none; border-color: var(--accent); }
+  .hint { font-size: 12px; color: var(--ink-2); margin: 6px 0 12px; }
+
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 11px 26px;
+    border-radius: 999px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink-2);
+    border: 1px solid var(--line);
+  }
+
+  .reveal { margin-top: 22px; display: none; }
+  .reveal.show { display: block; animation: fadeUp .35s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+
+  .my-answer {
+    background: var(--green-soft);
+    border-radius: 16px 4px 16px 16px;
+    padding: 12px 16px;
+    font-size: 15px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .my-answer::before {
+    content: "我的回答";
+    position: absolute; top: -9px; right: 12px;
+    font-size: 11px; color: var(--green);
+    background: var(--card); padding: 0 6px;
+    border: 1px solid var(--line); border-radius: 999px;
+  }
+  .sec-title {
+    font-size: 15px; font-weight: 600;
+    margin: 18px 0 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .sec-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  .ans {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .ans .likes {
+    font-size: 12px; color: var(--accent);
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .ans .text { font-size: 15px; }
+  .ans .note {
+    font-size: 13px; color: var(--gold);
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px dashed var(--line);
+  }
+  .analysis {
+    background: #faf7f0;
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+  .toolkit {
+    background: var(--green-soft);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 14px;
+    margin-top: 12px;
+  }
+  .toolkit b { color: var(--green); display: block; font-size: 13px; margin-bottom: 2px; }
+  .mode-tag {
+    display: inline-block; margin-top: 8px;
+    font-size: 12px; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 1px 10px;
+  }
+  .source { font-size: 12px; color: var(--ink-2); margin-top: 10px; }
+
+  .bank-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+  }
+  .bank-item:hover .bi-title { color: var(--accent); }
+  .bi-title { font-size: 15px; font-weight: 500; }
+  .bi-meta { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .filters button {
+    font-size: 13px; padding: 4px 14px;
+    border-radius: 999px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink-2); cursor: pointer;
+  }
+  .filters button.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .progress { font-size: 13px; color: var(--ink-2); text-align: center; margin-bottom: 14px; }
+  .footer-note { text-align: center; font-size: 12px; color: var(--ink-2); margin-top: 30px; }
+  .empty { text-align: center; color: var(--ink-2); padding: 40px 0; font-size: 14px; }
+  .new-badge {
+    font-size: 11px; color: #fff; background: var(--accent);
+    border-radius: 999px; padding: 1px 8px; margin-left: 6px; vertical-align: 2px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>职场回话训练<span class="dot">。</span></h1>
+  <div class="sub">先自己回一句，再看高赞怎么说</div>
+  <div class="mode-tag">管理者版 · 带 00 后团队</div>
+  <div class="stats">
+    <span><b id="stat-streak">0</b>天连练</span>
+    <span><b id="stat-done">0</b>题已练</span>
+    <span><b id="stat-total">0</b>题总库</span>
+  </div>
+</header>
+
+<nav>
+  <button id="nav-today" class="active" onclick="switchTab('today')">今日训练</button>
+  <button id="nav-bank" onclick="switchTab('bank')">全部题库</button>
+</nav>
+
+<div class="wrap">
+  <div id="view-today"></div>
+  <div id="view-bank" style="display:none"></div>
+  <div class="footer-note">题库每日自动更新 · 素材整理自小红书、知乎及管理类文章的公开讨论，回答为整理后的思路示范</div>
+</div>
+
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(function () {});</script>
+<script>document.write('<script src="questions.js?v=' + Date.now() + '"><\/script>');</script>
+<script>
+const BANK = (window.QUESTION_BANK || []).slice();
+const LS_KEY = "hht_progress_v2";   // { records: {qid: {answer, revealedAt}}, days: ["YYYY-MM-DD", ...] }
+const API = location.protocol.startsWith("http") ? "/api/progress" : null;
+const PER_DAY = 3;
+const MIN_GAP_DAYS = 14;   // 优先出隔了 14 天以上的题
+const FALLBACK_GAP_DAYS = 7;   // 凑不满当天题量时，放宽到隔 7 天以上
+const WINDOW_DAYS = 60;    // 60 天内同一道题最多出现 2 次
+const SCHEDULE_V2_FROM = "2026-10-27";   // 这天之前按旧规则重放，和当时实际出过的题保持一致
+const FALLBACK_FROM = "2026-11-05";   // 放宽规则从这天起生效，之前的出题记录不变
+
+const pad = n => String(n).padStart(2, "0");
+const fmt = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const todayStr = () => fmt(new Date());
+const addDays = (s, n) => new Date(Date.parse(s + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10);
+const diffDays = (a, b) => Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 864e5);
+const isWeekend = s => [0, 6].includes(new Date(s + "T00:00:00Z").getUTCDay());
+
+// —— 练习记录：存在本机服务器的 progress.json，浏览器存储只做备份 ——
+let progress = { records: {}, days: [] };
+
+function readLocal() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || null; } catch (e) { return null; } }
+function readLegacyLocal() {
+  try {
+    const records = JSON.parse(localStorage.getItem("hht_records_v1")) || {};
+    const days = Object.values(records).map(r => r.revealedAt && fmt(new Date(r.revealedAt))).filter(Boolean);
+    const s = JSON.parse(localStorage.getItem("hht_streak_v1")) || {};
+    if (s.last && s.count) for (let i = 0; i < s.count; i++) days.push(addDays(s.last, -i));
+    return { records, days };
+  } catch (e) { return { records: {}, days: [] }; }
+}
+function merge(a, b) {
+  const records = Object.assign({}, a.records);
+  for (const [id, r] of Object.entries((b && b.records) || {})) {
+    if (!records[id] || (r.revealedAt || "") > (records[id].revealedAt || "")) records[id] = r;
+  }
+  const days = [...new Set([...(a.days || []), ...((b && b.days) || [])])].sort();
+  return { records, days };
+}
+async function loadProgress() {
+  let p = merge(readLocal() || { records: {}, days: [] }, readLegacyLocal());
+  if (API) {
+    try {
+      const r = await fetch(API, { cache: "no-store" });
+      if (r.ok) p = merge(p, await r.json());
+    } catch (e) {}
+  }
+  progress = p;
+  saveProgress();
+}
+function saveProgress() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(progress)); } catch (e) {}
+  if (API) fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(progress) }).catch(() => {});
+}
+function loadRecords() { return progress.records; }
+function answeredToday(id) {
+  const r = progress.records[id];
+  return !!(r && r.revealedAt && fmt(new Date(r.revealedAt)) === todayStr());
+}
+
+function markPracticed() {
+  const today = todayStr();
+  if (!progress.days.includes(today)) progress.days.push(today);
+}
+
+// 连练天数：周末没练不算断；今天还没练时，显示截至昨天的天数
+function streak() {
+  const days = new Set(progress.days);
+  if (!days.size) return 0;
+  const earliest = [...days].sort()[0];
+  let d = todayStr(), n = 0;
+  if (!days.has(d)) d = addDays(d, -1);
+  while (d >= earliest) {
+    if (days.has(d)) n++;
+    else if (!isWeekend(d)) break;
+    d = addDays(d, -1);
+  }
+  return n;
+}
+
+function renderStats() {
+  document.getElementById("stat-streak").textContent = streak();
+  const records = loadRecords();
+  document.getElementById("stat-done").textContent = BANK.filter(q => records[q.id]).length;
+  document.getElementById("stat-total").textContent = BANK.length;
+}
+
+// —— 出题表：按日期从头推演，不依赖浏览器存储，同一天打开几次都是同样的题 ——
+function seededShuffle(arr, seed) {
+  const a = arr.slice();
+  let h = 0;
+  for (const c of seed) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+  for (let i = a.length - 1; i > 0; i--) {
+    h = (h * 1103515245 + 12345) >>> 0;
+    const j = h % (i + 1);
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function legacyPicks(day) {
+  const avail = BANK.filter(q => q.date <= day);
+  const fresh = avail.filter(q => q.date === day);
+  const rest = avail.filter(q => q.date !== day);
+  return fresh.concat(seededShuffle(rest, day)).slice(0, PER_DAY);
+}
+
+function buildSchedule(until) {
+  const shows = {};
+  const plan = {};
+  if (!BANK.length) return plan;
+  let day = BANK.map(q => q.date).sort()[0];
+  while (day <= until) {
+    let picks;
+    if (day < SCHEDULE_V2_FROM) {
+      picks = legacyPicks(day);
+    } else {
+      const avail = BANK.filter(q => q.date <= day);
+      const fresh = avail.filter(q => q.date === day);
+      const never = avail.filter(q => q.date !== day && !shows[q.id]);
+      const eligible = minGap => avail.filter(q => {
+        const s = shows[q.id];
+        if (!s) return false;
+        const recent = s.filter(x => diffDays(x, day) < WINDOW_DAYS).length;
+        return diffDays(s[s.length - 1], day) >= minGap && recent < 2;
+      }).sort((a, b) => shows[a.id][shows[a.id].length - 1].localeCompare(shows[b.id][shows[b.id].length - 1]) || a.id.localeCompare(b.id));
+      const minGap = day >= FALLBACK_FROM ? FALLBACK_GAP_DAYS : MIN_GAP_DAYS;
+      picks = fresh.concat(never, eligible(minGap)).slice(0, PER_DAY);
+    }
+    plan[day] = picks.map(q => q.id);
+    for (const q of picks) (shows[q.id] = shows[q.id] || []).push(day);
+    day = addDays(day, 1);
+  }
+  return plan;
+}
+
+function todaysQuestions() {
+  const today = todayStr();
+  return (buildSchedule(today)[today] || []).map(id => BANK.find(q => q.id === id)).filter(Boolean);
+}
+
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+
+function questionCard(q, idx) {
+  const records = loadRecords();
+  const rec = records[q.id];
+  const isNew = q.date === todayStr();
+  return `
+  <div class="card" id="card-${q.id}">
+    <div>
+      <span class="tag">${esc(q.category)}</span>
+      <span class="tag ${rec ? "done" : ""}" style="${rec ? "" : "display:none"}">已练过</span>
+      ${isNew ? '<span class="new-badge">今日新题</span>' : ""}
+    </div>
+    <div class="q-title">${esc(q.title)}</div>
+    <div class="scene">${esc(q.scene)}</div>
+    <div class="line-bubble" data-speaker="${esc(q.speaker || "对方")}">${esc(q.line)}</div>
+    <div id="input-${q.id}">
+      <textarea id="ta-${q.id}" placeholder="站在主管的位置，这句话你怎么接？先写下来，不用完美，练的就是开口。">${rec ? esc(rec.answer) : ""}</textarea>
+      <div class="hint">写完再看答案效果最好 —— 语塞就是卡在这一步。</div>
+      <button class="btn" onclick="reveal('${q.id}')">写好了，看高赞回答</button>
+      <button class="btn ghost" onclick="reveal('${q.id}', true)">想不出，直接看</button>
+    </div>
+    <div class="reveal" id="reveal-${q.id}"></div>
+  </div>`;
+}
+
+function revealHtml(q, myAnswer) {
+  const ranked = q.answers.slice().sort((a, b) => (b.likes || 0) - (a.likes || 0));
+  const answers = ranked.map((a, i) => `
+    <div class="ans">
+      <div class="likes">TOP ${i + 1}</div>
+      <div class="text">${esc(a.text)}</div>
+      ${a.note ? `<div class="note">💡 ${esc(a.note)}</div>` : ""}
+    </div>`).join("");
+  return `
+    ${myAnswer ? `<div class="my-answer">${esc(myAnswer)}</div>` : ""}
+    <div class="sec-title">评论区高赞回答</div>
+    ${answers}
+    <div class="sec-title">回话思路</div>
+    <div class="analysis">${esc(q.analysis)}</div>
+    ${q.toolkit ? `<div class="toolkit"><b>没有奖惩权时，你手里还有</b>${esc(q.toolkit)}</div>` : ""}
+    <div class="source">素材来源：${esc(q.source || "网络公开讨论")}</div>`;
+}
+
+function reveal(qid, skip) {
+  const q = BANK.find(x => x.id === qid);
+  const ta = document.getElementById("ta-" + qid);
+  const myAnswer = (ta.value || "").trim();
+  if (!skip && !myAnswer) { ta.focus(); ta.placeholder = "先写一句再看～ 哪怕只写个开头"; return; }
+  progress.records[qid] = { answer: myAnswer, revealedAt: new Date().toISOString() };
+  markPracticed();
+  saveProgress();
+  document.getElementById("input-" + qid).style.display = "none";
+  const box = document.getElementById("reveal-" + qid);
+  box.innerHTML = revealHtml(q, myAnswer) +
+    `<div style="margin-top:16px"><button class="btn ghost" onclick="redo('${qid}')">再练一遍</button></div>`;
+  box.classList.add("show");
+  renderStats();
+  updateTodayProgress();
+}
+
+function updateTodayProgress() {
+  const el = document.querySelector("#view-today .progress");
+  if (!el || !todaySet.length) return;
+  const done = todaySet.filter(answeredToday).length;
+  el.textContent = `今日 ${todaySet.length} 题 · 已完成 ${done} 题` + (done >= todaySet.length ? " · 🎉 今天练完了！" : "");
+}
+
+function redo(qid) {
+  const card = document.getElementById("card-" + qid);
+  const q = BANK.find(x => x.id === qid);
+  const idx = 0;
+  card.outerHTML = questionCard(q, idx);
+  document.getElementById("ta-" + qid).value = "";
+}
+
+// —— 题库视图 ——
+let filterCat = "全部";
+function renderBank() {
+  const cats = ["全部", ...new Set(BANK.map(q => q.category))];
+  const records = loadRecords();
+  const list = BANK
+    .filter(q => filterCat === "全部" || q.category === filterCat)
+    .sort((a, b) => b.date.localeCompare(a.date));
+  const items = list.map(q => `
+    <div class="bank-item" onclick="openOne('${q.id}')">
+      <div>
+        <div class="bi-title">${esc(q.title)}</div>
+        <div class="bi-meta">${esc(q.category)} · ${q.date} ${records[q.id] ? "· ✅ 已练" : ""}</div>
+      </div>
+      <div style="color:var(--line)">›</div>
+    </div>`).join("");
+  document.getElementById("view-bank").innerHTML = `
+    <div class="filters">${cats.map(c =>
+      `<button class="${c === filterCat ? "active" : ""}" onclick="setFilter('${esc(c)}')">${esc(c)}</button>`).join("")}
+    </div>
+    <div class="card" style="padding:6px 18px">${items || '<div class="empty">这个分类还没有题目</div>'}</div>`;
+}
+function setFilter(c) { filterCat = c; renderBank(); }
+
+function openOne(qid) {
+  const q = BANK.find(x => x.id === qid);
+  document.getElementById("view-bank").innerHTML =
+    `<button class="btn ghost" style="margin-bottom:14px" onclick="renderBank()">‹ 返回题库</button>` +
+    questionCard(q, 0);
+}
+
+// —— 今日视图 ——
+let todaySet = [];
+function renderToday() {
+  const qs = todaysQuestions();
+  todaySet = qs.map(q => q.id);
+  const doneToday = qs.filter(q => answeredToday(q.id)).length;
+  const short = qs.length && qs.length < PER_DAY
+    ? `<div class="empty" style="padding:0 0 14px">今天只有 ${qs.length} 道：其他题最近出过，为了不重复先不出。想多练可以去「全部题库」自选。</div>` : "";
+  document.getElementById("view-today").innerHTML =
+    (qs.length ? `<div class="progress">今日 ${qs.length} 题 · 已完成 ${doneToday} 题${doneToday >= qs.length ? " · 🎉 今天练完了！" : ""}</div>` + short + qs.map(questionCard).join("")
+      : '<div class="empty">今天没有新题：题库里的题最近都出过，为了不重复先不出。新题会在工作日早上自动补充，也可以去「全部题库」自选。</div>');
+}
+
+function switchTab(tab) {
+  document.getElementById("nav-today").classList.toggle("active", tab === "today");
+  document.getElementById("nav-bank").classList.toggle("active", tab === "bank");
+  document.getElementById("view-today").style.display = tab === "today" ? "" : "none";
+  document.getElementById("view-bank").style.display = tab === "bank" ? "" : "none";
+  if (tab === "bank") renderBank();
+}
+
+loadProgress().then(() => { renderStats(); renderToday(); });
+</script>
+</body>
+</html>
